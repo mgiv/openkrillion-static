@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
-const base=process.argv[2]||'http://localhost:3051',output=process.argv[3]||'output/audio';await mkdir(output,{recursive:true});
+const base=process.argv[2]||'http://localhost:4173',output=process.argv[3]||'output/audio';await mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,channel:'chrome'});
 try{
   const page=await browser.newPage();await page.goto(base);await page.waitForFunction(()=>window.render_game_to_text);

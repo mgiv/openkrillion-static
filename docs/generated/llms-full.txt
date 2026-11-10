@@ -3,14 +3,14 @@
 > An independent open-source Krillion-inspired daily trivia game. Not affiliated with the original Krillion service.
 
 Canonical: https://openkrillion.com/
-Source code (MIT): https://github.com/VulcanEon/openkrillion.com-service
+Source code (MIT): https://github.com/mgiv/openkrillion-static
 
 ## Play
 Seven open-answer prompts, a 3-second preview, and 25 seconds per answer. Prepared rarity tiers award 10, 15, 30, 60, 85 or 100 points. Seven answers can total 700 points and 7,000 metres.
 
 Choose Begin Descent, read the category, type an answer, press Enter or Dive, confirm a proposed correction if shown, then continue. After round seven, Surface opens the score report and accepted-answer review.
 
-Daily resets at midnight America/New_York. Practice is separate. Guest settings and history have a device-local copy; random browser identifiers and completed game records are held by this service. Comparisons use this site's players only.
+Daily resets at midnight America/New_York. Practice is separate. Settings, in-progress dives and history are stored only in this browser. There is no account, game server, cross-device sync, or comparison against other players.
 
 ## Pages
 - [Play and expandable guide](https://openkrillion.com/)
@@ -20,10 +20,10 @@ Daily resets at midnight America/New_York. Practice is separate. Guest settings 
 - [Pricing](https://openkrillion.com/pricing.md)
 - [Capabilities](https://openkrillion.com/models.md)
 - [Full reference](https://openkrillion.com/llms-full.txt)
-- [Report a problem](https://github.com/VulcanEon/openkrillion.com-service/issues)
+- [Report a problem](https://github.com/mgiv/openkrillion-static/issues)
 
 ## Limits
-No generative model, credits, payment flow, themed packs, user login or official affiliation. The public source ships a small independently assembled sample bank. Runtime reference snapshots are separate from the MIT application license.
+No generative model, credits, payment flow, themed packs, user login or official affiliation. The public source ships an independently assembled rotating bank of 42 categories and more than 1,400 accepted answers. The entire game runs client-side from static files; no Worker, API or database is required.
 
 These documents are rendered from the same public product configuration used by the website. Changes take effect on deployment. External AI links only prefill a public question and may require a provider account; answers and indexing are not guaranteed.
 
@@ -42,7 +42,7 @@ The game has 7 prompts, 25 seconds per answer and a maximum of 700 points. Each 
 No payment is collected, so no payment refund workflow exists. External AI providers may have their own plans and policies. Third-party hosting costs are not player prices.
 
 Privacy: https://openkrillion.com/privacy
-Source: https://github.com/VulcanEon/openkrillion.com-service
+Source: https://github.com/mgiv/openkrillion-static
 
 ---
 
@@ -67,7 +67,7 @@ No generative AI model is available or called by this game. The models.md filena
 
 Gameplay language: English. Help and AI questions: English and Chinese.
 
-Answers are validated server-side against prepared entries, with normalization, known aliases and conservative typo correction. Reference answer snapshots may differ from the original game in aliases or subsequent edits. Daily reference synchronization uses public endpoints, caches the snapshot in D1, and falls back to a clearly identified sample practice bank when unavailable.
+Answers are validated locally in the browser against the bundled sample entries, with normalization, known aliases and conservative typo correction. This static edition uses a small sample bank for both daily and practice play; it does not fetch official daily puzzles or synchronize reference data.
 
 No accounts, multiplayer, themed packs, checkout or cross-device account sync is implemented. Practice does not change the daily score or streak.
 

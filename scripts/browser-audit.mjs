@@ -2,10 +2,14 @@ import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 
-const base=process.argv[2]||'http://localhost:3051';
+const base=process.argv[2]||'http://localhost:4173';
 const output=process.argv[3]||'output/playwright/audit';
 await mkdir(output,{recursive:true});
-const browser=await chromium.launch({headless:true,channel:'chrome'});
+let bundled;
+try { bundled = (await import('@sparticuz/chromium')).default; } catch { /* use installed Chrome below */ }
+const browser = bundled
+  ? await chromium.launch({ headless:true, executablePath:await bundled.executablePath(), args:bundled.args })
+  : await chromium.launch({ headless:true, channel:'chrome' });
 const errors=[],report=[];
 try{
   const context=await browser.newContext({viewport:{width:1440,height:1000},permissions:['clipboard-read','clipboard-write']});

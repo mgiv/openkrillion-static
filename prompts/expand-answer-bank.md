@@ -1,87 +1,100 @@
-# Task: massively expand the accepted-answer bank
+# Expand the OpenKrillion question bank: deeper answers + new science/tech questions
 
-You are working in `mgiv/openkrillion-static`, a static browser trivia game with no
-server and no runtime dependencies. The game is only as good as its answer matching:
-today it rejects common correct answers. Concretely, `p10` ("Name a bird") does not
-accept **"blue tit"**, and several prompts have fewer than 24 accepted answers.
+You are working in `mgiv/openkrillion-static`, a static browser trivia game. You already
+know the layout: `public/puzzle.mjs` holds `BANK`, `public/rules.mjs` holds matching and
+scoring, `public/game.mjs` runs the dive, `src/` renders the HTML, and `public/` plus
+`docs/` are committed build artifacts.
 
-## Goal
+The bank is too thin — a correct answer like **"blue tit"** to `p10` "Name a bird" is
+rejected — and it leans heavily on pop culture (superhero teams, Shakespeare, game
+consoles, NBA MVPs). Two goals:
 
-Every one of the 42 prompts in `public/puzzle.mjs` should accept the answers a
-competent player would actually type, with honest rarity, without changing how the
-game matches, scores or times answers.
+1. **Deepen every existing question.** There are 42 prompts and 1,425 accepted answers
+   (min 13, max 59, average 34). Bring **every prompt to at least 70 accepted answers**,
+   ideally 80–120 where the category allows, so a competent player almost never sees
+   "no echo".
+2. **Add new questions.** Grow the bank to **63 prompts** (21 new), leaning toward
+   **science, technology, engineering and everyday-object knowledge** rather than film,
+   TV, music or sport. They must be answerable by an average adult without looking
+   anything up — "Name a phone manufacturer", "Name a tech company", "Name a unit of
+   measurement" — not specialist trivia.
 
-## Where things live
+## Rules for both halves
 
-- `public/puzzle.mjs` — `BANK`, 42 prompts with stable ids `p1`…`p42`.
-  - `q(id, text, { plankton: [...], schooler: [...], rare: [...], deepcut: [...], krillion: [...] })`
-  - An item is `'Answer'` or `['Answer', ['alias', 'alias']]`.
-  - `entry()`/`group()` turn items into `{ answer, tier, aliases? }`.
-  - `q()` dedupes by `normalize(answer)`, promotes the rarer tier on a collision, and
-    drops aliases that collide with any canonical answer.
-- `public/rules.mjs` — `normalize()` (NFKD, lowercase, strip non-alphanumerics) and
-  `matchAnswer()`: exact answer/alias match → unique inflection/phrase suggestion
-  (`variationMatch`, always confirmed by the player) → Damerau-Levenshtein distance
-  (allowance 0/1/2 by input length, also confirmed). `TIERS` maps tier → points.
-- `tests/game.test.mjs` — bank invariants (42 prompts, ≥10 answers each, >650 total, no
-  duplicate canonical or alias within a prompt) plus per-prompt matching assertions.
-- `public/` and `docs/` are committed build artifacts. Run `npm run build` and commit
-  them with the source change; CI runs `npm test`, `npm run build`, `npm run check`.
+- Data lives in `public/puzzle.mjs`: `q(id, text, { plankton: [...], schooler: [...],
+  rare: [...], deepcut: [...], krillion: [...] })`, where an item is `'Answer'` or
+  `['Answer', ['alias', 'alias']]`.
+- Aliases are mandatory for plurals and singulars, British vs American spelling,
+  abbreviations and acronyms, "the X" vs "X", the spelling people actually type, and
+  common short forms. Follow existing entries, e.g.
+  `['Shaquille O’Neal', ['Shaq', 'Shaquille ONeal']]`.
+- No duplicate answer after `normalize()` inside one prompt. `q()` dedupes, but do not
+  rely on it to fix sloppy data. A canonical answer never appears as another answer's
+  alias.
+- Keep rarity honest. plankton = what most people say first; schooler = common;
+  rare = less common but real; deepcut = uncommon but fair; krillion = one obscure but
+  defensible answer. Never pad a count by demoting a krillion or promoting an obscure
+  answer into plankton.
+- Never accept something vague ("bird" for "Name a bird"), wrong, or fictional unless
+  the prompt asks for fiction.
 
-## What to change
+## New questions: target the gap
 
-1. Add accepted answers so **every prompt has at least 60** (aim for 70–100 where the
-   category supports it). Suggested spread: plankton 20–30, schooler 20–30, rare
-   15–25, deepcut 8–15, krillion 2–6.
-2. Use aliases aggressively but honestly: plurals/singulars, British/American
-   spellings, abbreviations and acronyms, the spelling people actually type, and
-   given-name/full-name pairs. Follow the existing shape, e.g.
-   `['Shaquille O’Neal', ['Shaq', 'Shaquille ONeal']]`.
-3. Keep rarity honest. plankton = the first thing most people say; krillion = one
-   defensible answer almost nobody would think of. Never demote a krillion to pad a
-   count, and never promote an obscure answer into plankton.
-4. Never add an answer that is wrong for the category, fictional unless the prompt
-   asks for fiction, or so vague that accepting it would be unfair ("bird" is not an
-   answer to "Name a bird").
-5. Do **not** change prompt ids, prompt text, tier keys, scoring, timing, reroll, or
-   the matching algorithm. This is a data task: if an answer is missing, add the
-   answer.
-6. Keep the file browser-friendly — it ships to every visitor. Report the file size
-   before and after.
+Existing categories (do not duplicate them): potato prep, four-letter animals, NBA MVPs,
+one-letter element symbols, station, countries ending in E, superhero teams, fruit,
+vegetable, bird, mammal, marine animal, dog breed, instrument, board game, card game,
+sport, planets and dwarf planets, moons, chemical elements, European countries, US
+states, capital cities, flowers, trees, weather, languages, transport, breakfast,
+dessert, soup, cheese, body part, household tool, kitchen appliance, fictional
+superhero, mythological creature, Shakespeare plays, game consoles, countries starting
+with B, pasta, pizza toppings.
 
-## Worked example — `p10`, "Name a bird"
+Good directions for the new ones (pick about 21, spread across tiers, 40+ answers each
+minimum): phone manufacturers · tech companies · programming languages · web browsers ·
+operating systems · computer parts and peripherals · cable and connector types · file
+formats · internet protocols · units of measurement · electrical units · SI units ·
+types of energy · simple machines · engine types · metals · chemical compounds · gases ·
+body organs · bones · vitamins · branches of science · engineering disciplines ·
+constellations · star names · cloud types · rock types · measuring instruments ·
+mathematical shapes.
 
-Add at least: blue tit, great tit, coal tit, long-tailed tit, starling, house
-sparrow, chaffinch, goldfinch, greenfinch, siskin, wren, dunnock, blackbird, song
-thrush, mistle thrush, fieldfare, redwing, jay, jackdaw, rook, carrion crow, magpie,
-raven, swift, swallow, house martin, sand martin, skylark, meadow pipit, pied
-wagtail, kestrel, buzzard, red kite, sparrowhawk, peregrine falcon, merlin, barn owl,
-tawny owl, little owl, mute swan, greylag goose, canada goose, mallard, teal,
-shoveler, tufted duck, eider, shelduck, oystercatcher, curlew, lapwing, redshank,
-snipe, egret, cormorant, gannet, guillemot, razorbill, kittiwake, common tern,
-dipper, nuthatch, treecreeper, redpoll, crossbill, waxwing, nightjar, cuckoo, hoopoe.
+Avoid: more movie/TV/music/sport categories, brand-new internet slang, and anything
+that is really a specialist quiz.
 
-Then repeat the exercise for the other 41 prompts (mammals, foods, weather, sports,
-countries, languages, films, and so on). Where a category is genuinely narrow, prefer
-40 excellent answers over padding with nonsense.
+## Code constraints you must respect
 
-## Acceptance criteria (all must pass)
+- `p1`–`p42` ids and prompt text stay exactly as they are; new questions get `p43`–`p63`.
+- **Do not reorder the first seven prompts.** `DEMO = BANK.slice(0, 7)` is the
+  deterministic `?test=1` fixture and `scripts/browser-audit.mjs` depends on `p1` being
+  the potatoes prompt plus its canned answers for rounds 2–7. If you change that, update
+  the audit in the same PR.
+- **Keep `BANK.length` a multiple of 7.** `DAYS_PER_CYCLE = Math.floor(BANK.length / 7)`;
+  at 63 that is a 9-day cycle visiting every question exactly once. At 65 the last two
+  questions would never appear. 63 or 70 — not "about 65".
+- Update `tests/game.test.mjs`: the `BANK.length`, the per-prompt minimum (raise from 10
+  to 60+), the total (raise from 650 to over 4,000), and add curated spot checks
+  (`matchAnswer('blue tit', questionById('p10').answers).answer === 'Blue tit'`, a phone
+  brand for the new phones prompt, and so on).
+- Do not touch scoring, timing, pause, reroll, or `matchAnswer()`/`normalize()`. If an
+  answer is missing, add the answer.
+- Update the README sentence "42 categories and more than 1,400 accepted answers".
+- `npm run build` regenerates `public/`; commit that together with `docs/`. The bank
+  ships to every visitor and is currently 28 KB — up to ~150 KB is fine, but report the
+  new size.
 
-- `npm test` — and extend `tests/game.test.mjs`: assert the new per-prompt minimum
-  (raise the `>= 10` loop and the `> 650` total), and add curated spot checks such as
-  `matchAnswer('blue tit', questionById('p10').answers).answer === 'Blue tit'`.
-- `npm run check`
-- `npm run build`, then commit the regenerated `public/` and `docs/` files.
-- Browser acceptance: `npm run dev` in one terminal, then
-  `npm run test:browser -- http://localhost:4173` in another. Pass the base URL
-  **without** a trailing slash — the dev server returns 404 for `//`. All checks must
-  pass with zero console errors.
-- `git diff --check` is clean.
-- Report a table: prompt id, prompt text, accepted answers before → after, plus any
-  candidate you deliberately rejected (ambiguous, wrong, or unfair) and why.
+## Verify before opening the PR
 
-## Guardrails
+1. `npm ci && npm test` — all green.
+2. `npm run check`.
+3. `npm run build`, then commit the regenerated artifacts.
+4. Browser acceptance: `npm run dev`, and in another terminal
+   `npm run test:browser -- http://localhost:4173` — pass the URL **without** a trailing
+   slash (the dev server 404s on `//`). All checks must pass with zero console errors.
+5. `git diff --check` is clean.
+6. Hand-check at least five plausible answers per prompt, including typos and plurals.
 
-- Do not loosen `matchAnswer()` to compensate for missing data — add the data.
-- Do not create answers that would be reviewed as another prompt's canonical answer.
-- Keep the tone of the existing content: no NSFW, slurs, or political framing.
+## Deliverable
+
+One PR against `main` with a summary table: prompt id, text, answers before → after; the
+new prompt list; the tier distribution; the new file size; and anything you deliberately
+rejected as vague or unfair, with the reason. No unrelated changes.

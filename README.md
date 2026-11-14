@@ -16,7 +16,7 @@ Open `http://localhost:4173`. The development command only serves files from `pu
 
 ## Game and local data
 
-The original interface and flow are kept: the animated ocean, seven prompts, preview and answer timers, answer rejection/correction, rarity scoring, descent, pause/resume, synthesized sound, results, answer review, sharing, practice, settings, wardrobe, and logbook.
+The original interface and flow are kept: the animated ocean, seven prompts, preview and answer timers, answer rejection/correction, one question reroll per dive, rarity scoring, descent, pause/resume, synthesized sound, results, answer review, sharing, practice, settings, wardrobe, and logbook.
 
 `public/game.mjs` implements scoring and timing in the browser. `public/puzzle.mjs` contains an independently assembled bank of 42 categories and more than 1,400 accepted answers used by daily and practice play. The bank is intentionally visible and self-contained; it is not synchronized with krillion.io. Scores are not compared with other players. Settings, drafts, in-progress games, feedback entries, and history stay in this browser's local storage and do not sync across devices. The game does not set cookies or send game data over the network.
 

@@ -207,3 +207,15 @@ body[data-phase="done"] .mascot{z-index:15}
 @keyframes companion-chomp{22%{transform:translateX(-7px) scale(.9) rotate(7deg)}42%{transform:translateX(11px) scale(1.24) rotate(-9deg)}58%{transform:translateX(5px) scale(1.02)}74%{transform:translateX(9px) scale(1.18) rotate(-7deg)}}
 .low-power .mascot:not(.poked):not(.celebrate) img{animation-play-state:paused}
 @media(prefers-reduced-motion:reduce){.mascot img{animation:none!important}}
+
+/* One per-dive reroll mirrors DIVE's dimensions, palette, and pixel-button treatment. */
+#submit-btn{width:88px;height:54px}
+#reroll-btn{width:88px;height:54px;min-width:88px;flex:none;padding:0;background:#ff5d8f;border:0;color:#061120;box-shadow:0 0 0 2px #050a14,0 3px 0 2px #7d1d3c,0 0 16px #ff5d8f73;letter-spacing:.04em;font-size:13px;line-height:1;text-align:center}
+#reroll-btn:not(:disabled):hover{background:var(--pink)}
+#reroll-btn:disabled{opacity:.45}
+.prompt-card.rerolling{animation:question-reroll .42s var(--ocean-out)}
+@keyframes question-reroll{0%{opacity:.35;transform:translateY(9px) scale(.985);filter:blur(1px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+/* Keep the original sonar-sweep spinner treatment; the timer ring tracks time separately. */
+.falling-answer{box-shadow:0 0 26px color-mix(in srgb,var(--chip-color) 42%,transparent)}
+@media(max-width:699px){#submit-btn,#reroll-btn{width:88px;height:52px;min-width:88px;padding:0}#reroll-btn{font-size:12px}}
+.dive-paused .timer svg,.dive-paused .timer:after{animation-play-state:paused}

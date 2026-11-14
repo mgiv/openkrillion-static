@@ -66,9 +66,11 @@ body[data-phase="preview"] .prompt-card{animation:question-arrive .7s cubic-bezi
 @keyframes dock-rise{from{transform:translateY(120px);opacity:0}}
 .answer-dock:before{inset:-25px -100vw -120px;background:linear-gradient(transparent,#050a14eb 26%)}
 #answer-form{gap:10px}
-.timer{width:58px;height:58px;font-size:26px;background:radial-gradient(circle,#0b1526f2 40%,#101d33e6 100%);box-shadow:0 0 0 2px #060d1a,0 0 0 4px #1b3050,0 0 18px #4de3ff33,inset 0 0 14px #4de3ff24;overflow:hidden}
-.timer:before{content:'';position:absolute;inset:8px;border:1px solid #4de3ff38;border-radius:50%;background:linear-gradient(transparent calc(50% - .5px),#4de3ff18 50%,transparent calc(50% + .5px)),linear-gradient(90deg,transparent calc(50% - .5px),#4de3ff18 50%,transparent calc(50% + .5px))}
-.timer:after{content:'';position:absolute;top:50%;left:50%;width:50%;height:2px;background:linear-gradient(90deg,#4de3ffe6,transparent);box-shadow:0 0 8px #4de3ffcc;transform-origin:0;animation:sonar-sweep 2.4s linear infinite}
+.timer{isolation:isolate;width:58px;height:58px;font-size:26px;background:radial-gradient(circle,#0b1526f2 40%,#101d33e6 100%);box-shadow:0 0 0 2px #060d1a,0 0 0 4px #1b3050,0 0 18px #4de3ff33,inset 0 0 14px #4de3ff24;overflow:hidden}
+.timer:before{content:'';position:absolute;inset:6px;border:1px solid #4de3ff33;border-radius:50%;background:repeating-conic-gradient(from 15deg,#4de3ff17 0deg 1.2deg,transparent 1.2deg 30deg)}
+/* Radar sweep: a trailing wedge with a bright leading edge, rotated behind the rings
+   and the countdown so the timer reads as a turning sonar rather than a static dial. */
+.timer:after{content:'';position:absolute;inset:0;z-index:-1;border-radius:50%;pointer-events:none;background:conic-gradient(from 0deg,#4de3ff00 0deg 300deg,#4de3ff0d 312deg,#4de3ff2e 338deg,#4de3ff5c 352deg,#bff6ffd9 358.6deg,#eaffff 359.6deg,#4de3ff00 360deg);animation:sonar-sweep 2.4s linear infinite}
 .timer svg{opacity:.3}.timer .timer-ring{stroke-width:1}
 .timer span{text-shadow:0 0 12px #4de3ffb3}
 @keyframes sonar-sweep{to{transform:rotate(360deg)}}

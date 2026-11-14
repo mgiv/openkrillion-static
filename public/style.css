@@ -219,3 +219,11 @@ body[data-phase="done"] .mascot{z-index:15}
 .falling-answer{box-shadow:0 0 26px color-mix(in srgb,var(--chip-color) 42%,transparent)}
 @media(max-width:699px){#submit-btn,#reroll-btn{width:88px;height:52px;min-width:88px;padding:0}#reroll-btn{font-size:12px}}
 .dive-paused .timer svg,.dive-paused .timer:after{animation-play-state:paused}
+
+/* Phones: the answer field matters more than a matching button pair. Below 520px the
+   reroll collapses to its icon so typing space is not spent on a second 88px button. */
+@media(max-width:520px){
+  #reroll-btn{width:44px;min-width:44px;font-size:0;letter-spacing:0}
+  #reroll-btn:before{content:'↻';font-size:21px;line-height:1}
+}
+@media(max-width:380px){#submit-btn{width:72px;min-width:72px;padding:0}}

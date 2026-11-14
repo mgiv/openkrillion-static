@@ -74,7 +74,7 @@ export function createGame({ mode = 'daily', now = Date.now(), date = etDate(now
   const runId = newId();
   const puzzleSeed = seed || (normalizedMode === 'practice' ? runId : 'daily');
   const puzzle = puzzleForDate(date, puzzleSeed);
-  const game = { ...promptDTO(puzzle), runId, mode:normalizedMode, round:0, roundStart:now + PREVIEW_MS, pausedAt:null, completed:false, results:[] };
+  const game = { ...promptDTO(puzzle), runId, mode:normalizedMode, round:0, roundStart:now + PREVIEW_MS, pausedAt:null, completed:false, rerollsUsed:false, results:[] };
   return stateOf(game, now);
 }
 export function isValidGame(value) {
@@ -82,6 +82,18 @@ export function isValidGame(value) {
 }
 export function nextRound(game, now = Date.now()) {
   if (!game.completed && game.roundStart === null) game.roundStart = now + PREVIEW_MS;
+  return stateOf(game, now);
+}
+export function rerollQuestion(game, { replacementId, now = Date.now() } = {}) {
+  if (game.completed || game.round >= QUESTIONS_PER_DIVE || game.roundStart === null) throw new Error('There is no active question to reroll.');
+  if (now > game.roundStart + ROUND_MS) throw new Error('The question reroll window has closed.');
+  if (game.rerollsUsed) throw new Error('Your one question reroll has already been used.');
+  const scheduled = new Set(game.prompts.map(prompt => prompt.id));
+  const available = BANK.filter(prompt => !scheduled.has(prompt.id));
+  const replacement = replacementId ? available.find(prompt => prompt.id === replacementId) : available[Math.floor(Math.random() * available.length)];
+  if (!replacement) throw new Error('No unused questions are available to reroll.');
+  game.prompts[game.round] = { id:replacement.id, text:replacement.text };
+  game.rerollsUsed = true;
   return stateOf(game, now);
 }
 export function setPaused(game, paused, now = Date.now()) {

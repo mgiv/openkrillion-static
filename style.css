@@ -66,9 +66,11 @@ body[data-phase="preview"] .prompt-card{animation:question-arrive .7s cubic-bezi
 @keyframes dock-rise{from{transform:translateY(120px);opacity:0}}
 .answer-dock:before{inset:-25px -100vw -120px;background:linear-gradient(transparent,#050a14eb 26%)}
 #answer-form{gap:10px}
-.timer{width:58px;height:58px;font-size:26px;background:radial-gradient(circle,#0b1526f2 40%,#101d33e6 100%);box-shadow:0 0 0 2px #060d1a,0 0 0 4px #1b3050,0 0 18px #4de3ff33,inset 0 0 14px #4de3ff24;overflow:hidden}
-.timer:before{content:'';position:absolute;inset:8px;border:1px solid #4de3ff38;border-radius:50%;background:linear-gradient(transparent calc(50% - .5px),#4de3ff18 50%,transparent calc(50% + .5px)),linear-gradient(90deg,transparent calc(50% - .5px),#4de3ff18 50%,transparent calc(50% + .5px))}
-.timer:after{content:'';position:absolute;top:50%;left:50%;width:50%;height:2px;background:linear-gradient(90deg,#4de3ffe6,transparent);box-shadow:0 0 8px #4de3ffcc;transform-origin:0;animation:sonar-sweep 2.4s linear infinite}
+.timer{isolation:isolate;width:58px;height:58px;font-size:26px;background:radial-gradient(circle,#0b1526f2 40%,#101d33e6 100%);box-shadow:0 0 0 2px #060d1a,0 0 0 4px #1b3050,0 0 18px #4de3ff33,inset 0 0 14px #4de3ff24;overflow:hidden}
+.timer:before{content:'';position:absolute;inset:6px;border:1px solid #4de3ff33;border-radius:50%;background:repeating-conic-gradient(from 15deg,#4de3ff17 0deg 1.2deg,transparent 1.2deg 30deg)}
+/* Radar sweep: a trailing wedge with a bright leading edge, rotated behind the rings
+   and the countdown so the timer reads as a turning sonar rather than a static dial. */
+.timer:after{content:'';position:absolute;inset:0;z-index:-1;border-radius:50%;pointer-events:none;background:conic-gradient(from 0deg,#4de3ff00 0deg 300deg,#4de3ff0d 312deg,#4de3ff2e 338deg,#4de3ff5c 352deg,#bff6ffd9 358.6deg,#eaffff 359.6deg,#4de3ff00 360deg);animation:sonar-sweep 2.4s linear infinite}
 .timer svg{opacity:.3}.timer .timer-ring{stroke-width:1}
 .timer span{text-shadow:0 0 12px #4de3ffb3}
 @keyframes sonar-sweep{to{transform:rotate(360deg)}}
@@ -207,3 +209,23 @@ body[data-phase="done"] .mascot{z-index:15}
 @keyframes companion-chomp{22%{transform:translateX(-7px) scale(.9) rotate(7deg)}42%{transform:translateX(11px) scale(1.24) rotate(-9deg)}58%{transform:translateX(5px) scale(1.02)}74%{transform:translateX(9px) scale(1.18) rotate(-7deg)}}
 .low-power .mascot:not(.poked):not(.celebrate) img{animation-play-state:paused}
 @media(prefers-reduced-motion:reduce){.mascot img{animation:none!important}}
+
+/* One per-dive reroll mirrors DIVE's dimensions, palette, and pixel-button treatment. */
+#submit-btn{width:88px;height:54px}
+#reroll-btn{width:88px;height:54px;min-width:88px;flex:none;padding:0;background:#ff5d8f;border:0;color:#061120;box-shadow:0 0 0 2px #050a14,0 3px 0 2px #7d1d3c,0 0 16px #ff5d8f73;letter-spacing:.04em;font-size:13px;line-height:1;text-align:center}
+#reroll-btn:not(:disabled):hover{background:var(--pink)}
+#reroll-btn:disabled{opacity:.45}
+.prompt-card.rerolling{animation:question-reroll .42s var(--ocean-out)}
+@keyframes question-reroll{0%{opacity:.35;transform:translateY(9px) scale(.985);filter:blur(1px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+/* Keep the original sonar-sweep spinner treatment; the timer ring tracks time separately. */
+.falling-answer{box-shadow:0 0 26px color-mix(in srgb,var(--chip-color) 42%,transparent)}
+@media(max-width:699px){#submit-btn,#reroll-btn{width:88px;height:52px;min-width:88px;padding:0}#reroll-btn{font-size:12px}}
+.dive-paused .timer svg,.dive-paused .timer:after{animation-play-state:paused}
+
+/* Phones: the answer field matters more than a matching button pair. Below 520px the
+   reroll collapses to its icon so typing space is not spent on a second 88px button. */
+@media(max-width:520px){
+  #reroll-btn{width:44px;min-width:44px;font-size:0;letter-spacing:0}
+  #reroll-btn:before{content:'↻';font-size:21px;line-height:1}
+}
+@media(max-width:380px){#submit-btn{width:72px;min-width:72px;padding:0}}

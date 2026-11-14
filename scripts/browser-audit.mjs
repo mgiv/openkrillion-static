@@ -29,7 +29,7 @@ try{
   await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).phase==='answering');
   await page.waitForTimeout(450);await page.screenshot({path:output+'/desktop-answer.png'});
   await page.locator('#answer').fill('zzzzzzzzzz');await page.locator('#answer').press('Enter');await page.waitForFunction(()=>document.getElementById('answer-status').textContent.includes('no echo'));
-  await page.locator('#answer').fill('mashed');await page.locator('#answer').press('Enter');await page.waitForFunction(()=>document.getElementById('answer-status').textContent.includes('corrects to'));assert.equal(await page.locator('#answer').inputValue(),'Mashed potatoes');
+  await page.locator('#answer').fill('mashed');await page.locator('#answer').press('Enter');await page.waitForFunction(()=>document.getElementById('answer-status').textContent.includes('Did you mean'));assert.equal(await page.locator('#answer').inputValue(),'Mashed potatoes');
   await page.locator('#answer').press('Enter');await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).phase==='landed',{timeout:15000});
   await page.waitForTimeout(1000);await page.screenshot({path:output+'/desktop-landing.png'});
   const answers=['Mara','Bob Pettit','Yttrium','Ghost station','France','Great Lakes Avengers'];
@@ -45,7 +45,9 @@ try{
   const state=await page.evaluate(()=>JSON.parse(window.render_game_to_text()));assert.equal(state.results.length,7);assert.ok(state.score>=300);assert.equal(state.results[6].score,local?0:100);assert.equal(state.sound.state,'running');
   await page.screenshot({path:output+'/desktop-results.png'});await page.locator('[data-review="3"]').click();assert.ok(await page.locator('.review-expanded').nth(3).isVisible());
   await page.locator('#copy-result').click();assert.ok((await page.evaluate(()=>navigator.clipboard.readText())).includes('OpenKrillion'));
-  await page.reload();await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).phase==='done');assert.equal(JSON.parse(await page.evaluate(()=>window.render_game_to_text())).score,state.score);report.push({desktop:'pass',game:state});
+  await page.reload();await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).phase==='done');assert.equal(JSON.parse(await page.evaluate(()=>window.render_game_to_text())).score,state.score);
+  await page.locator('#results [data-action="practice"]').click();await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).phase==='preview');await page.evaluate(()=>window.advanceTime(3100));await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).phase==='answering');
+  const beforeReroll=JSON.parse(await page.evaluate(()=>window.render_game_to_text()));await page.locator('#reroll-btn').click();const afterReroll=JSON.parse(await page.evaluate(()=>window.render_game_to_text()));assert.notEqual(afterReroll.prompt,beforeReroll.prompt);assert.equal(afterReroll.rerollsUsed,true);assert.equal(await page.locator('#reroll-btn').isDisabled(),true);report.push({desktop:'pass',reroll:'pass',game:state});
   const mobile=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:1,colorScheme:'light'});const mp=await mobile.newPage();mp.on('pageerror',e=>errors.push(e.message));
   await mp.goto(base+'/?test=1&lang=zh');await mp.waitForFunction(()=>window.render_game_to_text);await mp.evaluate(()=>document.fonts.ready);await mp.waitForFunction(()=>/DIVE #/.test(document.getElementById('day-number').textContent));await mp.screenshot({path:output+'/mobile-home.png'});
   assert.equal(await mp.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);

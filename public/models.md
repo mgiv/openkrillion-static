@@ -7,8 +7,9 @@ No generative AI model is available or called by this game. The models.md filena
 ## Available workflows
 - Daily seven-prompt trivia
 - Practice dives
+- One question reroll per dive
 - Six rarity tiers
-- Typo correction with confirmation
+- Typo and variation suggestions with confirmation
 - Animated ocean descent
 - Synthesized sound effects
 - Score and depth report

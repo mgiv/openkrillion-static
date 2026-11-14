@@ -22,7 +22,17 @@ export class Ocean {
   setPhase(phase){this.phase=phase;this.targetActive=phase==='intro'||phase==='done'?0:1;if(phase==='intro')this.moveCamera(-45,700);}
   setDepth(value){this.target=value;if(!['plunge','surface'].includes(this.phase)){this.depth=value;if(this.phase==='landed')this.moveCamera(value+30,500);}}
   round(depth){this.target=depth;this.depth=depth;this.fx=null;this.roundBase=depth;const l=this.layout(),card=document.getElementById('prompt-card'),dockTop=l.height-80,cardHeight=card?.offsetHeight||180;this.roundAnchor=Math.max(8,Math.min(l.mobile?175:210,(dockTop-cardHeight)/2));this.moveCamera(depth+(l.height/2-this.roundAnchor)/2,2200);}
-  drop(oldDepth,result,progress){this.cameraJob=null;this.fx={tier:result.tier,progress,startDepth:oldDepth,resultDepth:oldDepth+result.score*10};const eased=result.tier==='plankton'?(1-Math.cos(Math.PI*progress))/2:easeInOut(progress);this.cameraDepth=mix(oldDepth+120,oldDepth+result.score*10+30,eased);this.cameraTarget=oldDepth+result.score*10+30;this.depth=result.tier==='krillion'?oldDepth:mix(oldDepth,oldDepth+result.score*10,eased);this.target=oldDepth+result.score*10;}
+  drop(oldDepth,result,progress){
+    this.cameraJob=null;
+    if(!this.fx||this.fx.round!==this.roundIndex){
+      this.fx={tier:result.tier,progress,startDepth:oldDepth,resultDepth:oldDepth+result.score*10,round:this.roundIndex,cameraStart:this.cameraDepth,cameraEnd:oldDepth+result.score*10+30};
+    }else{this.fx.tier=result.tier;this.fx.progress=progress;this.fx.resultDepth=oldDepth+result.score*10;}
+    const eased=result.tier==='plankton'?(1-Math.cos(Math.PI*progress))/2:easeInOut(progress);
+    // Anchor the camera at its current position so the answer and scenery flow
+    // into the plunge continuously instead of jumping ahead by 120 metres.
+    this.cameraDepth=mix(this.fx.cameraStart,this.fx.cameraEnd,eased);this.cameraTarget=this.fx.cameraEnd;
+    this.depth=result.tier==='krillion'?oldDepth:mix(oldDepth,oldDepth+result.score*10,eased);this.target=oldDepth+result.score*10;
+  }
   typeAt(x,y,n=2){if(this.reduced)return;for(let i=0;i<n;i++)this.particles.push({x:x+(Math.random()-.5)*8,y:y+Math.random()*10,vx:(Math.random()-.5)*8,vy:-35-Math.random()*15,life:1,color:'#b2dce8',bubble:true,r:1+Math.random()*2});}
   burst(color='#4de3ff',n=30){if(this.reduced)return;const l=this.layout();for(let i=0;i<(this.lowPower?n/3:n);i++)this.particles.push({x:l.center,y:l.height/2-60,vx:(Math.random()-.5)*220,vy:(Math.random()-.5)*240-40,life:1,color});}
   tick(now){const dt=Math.min(.05,(now-this.last)/1000||.016);if(!document.hidden&&(!this.lowPower||now-this.last>=50)){this.dt=dt;this.last=now;this.time+=this.reduced?0:dt;if(this.cameraJob){const job=this.cameraJob,t=clamp((now-job.start)/job.duration,0,1);this.cameraDepth=mix(job.from,job.to,job.ease(t));if(t===1)this.cameraJob=null;}this.active=mix(this.active,this.targetActive,1-Math.exp(-3.6*dt));for(const p of this.particles){p.x+=p.vx*dt;p.y+=p.vy*dt;if(!p.bubble)p.vy+=90*dt;p.life-=dt*.65;}this.particles=this.particles.filter(p=>p.life>0);this.draw();}requestAnimationFrame(t=>this.tick(t));}

@@ -5,12 +5,17 @@ for (const path of ['public/index.html', 'public/privacy/index.html', 'public/ab
 const html = await readFile('public/index.html', 'utf8');
 assert.match(html, /<canvas id="ocean"/);
 assert.match(html, /id="answer-form"/);
+assert.match(html, /id="reroll-btn"/);
 assert.match(html, /id="guide"/);
 assert.match(html, /src="\/app\.mjs"/);
 assert.doesNotMatch(html, /runtime-config|\/api\//);
 const app = await readFile('public/app.mjs', 'utf8');
 assert.doesNotMatch(app, /fetch\s*\(|XMLHttpRequest|\/api\//);
 assert.match(app, /localStorage/);
+assert.match(app, /Did you mean/);
+const styles = await readFile('public/style.css', 'utf8');
+assert.match(styles, /sonar-sweep 2\.4s linear infinite/);
+assert.match(styles, /\.falling-answer\{box-shadow:0 0 26px/);
 const game = await readFile('public/game.mjs', 'utf8');
 assert.match(game, /submitAnswer/);
 assert.match(game, /reviewFor/);

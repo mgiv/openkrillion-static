@@ -241,10 +241,15 @@ export const BANK = [
     krillion: ['Wollemi pine'],
   }),
   q('p26', 'Name a type of weather', {
-    plankton: ['Rain', 'Snow', 'Sunshine', 'Wind', 'Thunderstorm', 'Hail', 'Fog', 'Sleet', 'Drizzle', 'Heatwave', 'Blizzard', 'Drought'],
-    schooler: ['Hurricane', 'Tornado', 'Monsoon', 'Cyclone', 'Freezing rain', 'Dust storm', 'Ice storm', 'Sandstorm', 'Heat lightning', 'Graupel'],
-    rare: ['Virga', 'Thundersnow', 'Derecho', 'Waterspout', 'Whiteout', 'Rime ice', 'Ball lightning'],
-    deepcut: ['Frost flower', 'St. Elmo’s fire', 'Sprites', 'Diamond dust'],
+    plankton: [
+      ['Rain', ['rainy', 'raining']], ['Snow', ['snowy', 'snowing']], ['Clear', ['clear sky', 'clear skies']],
+      ['Storm', ['stormy', 'stormy weather']], ['Sunny', ['sunny skies']], ['Cloudy', ['clouds', 'cloudy skies']],
+      ['Wind', ['windy', 'breezy']], ['Thunderstorm', ['thunder storm']], 'Sunshine', 'Hail', 'Fog', 'Sleet',
+      'Drizzle', 'Heatwave', 'Blizzard', 'Drought', 'Overcast', 'Showers', 'Downpour', 'Mist', 'Humid weather',
+    ],
+    schooler: ['Hurricane', 'Tornado', 'Monsoon', 'Cyclone', 'Freezing rain', 'Dust storm', 'Ice storm', 'Sandstorm', 'Heat lightning', 'Graupel', 'Gale', 'Squall', 'Windstorm', 'Rainstorm', 'Freezing fog', 'Thick fog'],
+    rare: ['Virga', 'Thundersnow', 'Derecho', 'Waterspout', 'Whiteout', 'Rime ice', 'Ball lightning', 'Haboob', 'Sundog'],
+    deepcut: ['Frost flower', 'St. Elmo’s fire', 'Sprites'],
     krillion: ['Diamond dust'],
   }),
   q('p27', 'Name a language', {

@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { BANK, DEMO, questionById } from '../public/puzzle.mjs';
 import { etDate, resetAt, matchAnswer, normalize, ROUND_MS, PREVIEW_MS } from '../public/rules.mjs';
-import { puzzleForDate, createGame, submitAnswer, nextRound, setPaused, reviewFor, isValidGame, scoreOf } from '../public/game.mjs';
+import { puzzleForDate, createGame, submitAnswer, nextRound, rerollQuestion, setPaused, reviewFor, isValidGame, scoreOf } from '../public/game.mjs';
+import { Ocean } from '../public/ocean.mjs';
 
 const addDays = (date, days) => {
   const value = new Date(`${date}T12:00:00Z`);
@@ -50,7 +51,25 @@ test('answer matching accepts expanded preparation methods and preserves correct
   const potatoes = questionById('p1').answers;
   assert.equal(matchAnswer('mashed', potatoes).answer, 'Mashed potatoes');
   assert.equal(matchAnswer('peel', potatoes).answer, 'Peeled potatoes');
+  assert.equal(matchAnswer('peel', potatoes).correction, true);
   assert.equal(matchAnswer('boil', potatoes).answer, 'Boiled potatoes');
+  assert.equal(matchAnswer('boil', potatoes).correction, true);
+  assert.equal(matchAnswer('bake', potatoes).answer, 'Baked potato');
+  assert.equal(matchAnswer('bake', potatoes).correction, true);
+  const genericForms = [{ answer:'Baked potatoes', tier:'plankton' }, { answer:'Boiled potatoes', tier:'schooler' }];
+  assert.equal(matchAnswer('bake', genericForms).answer, 'Baked potatoes');
+  assert.equal(matchAnswer('bake', genericForms).correction, true);
+  assert.equal(matchAnswer('boiling', genericForms).answer, 'Boiled potatoes');
+  assert.equal(matchAnswer('baked', genericForms).answer, 'Baked potatoes');
+  const weather = questionById('p26').answers;
+  assert.equal(matchAnswer('storm', weather).answer, 'Storm');
+  assert.equal(matchAnswer('stormy', weather).correction, true);
+  assert.equal(matchAnswer('clear', weather).answer, 'Clear');
+  assert.equal(matchAnswer('clrea', weather).answer, 'Clear');
+  assert.equal(matchAnswer('clrea', weather).correction, true);
+  const typo = matchAnswer('bakd potato', potatoes);
+  assert.equal(typo.answer, 'Baked potato');
+  assert.equal(typo.correction, true);
   assert.equal(matchAnswer('Yttrum', questionById('p4').answers).correction, true);
   assert.equal(matchAnswer('zzzzzzzzzz', potatoes), null);
 });
@@ -75,6 +94,37 @@ test('client game maintains preview, corrections, scoring, pause and resumable s
   assert.equal(scored.result.score, 10);
   assert.equal(scored.state.round, 1);
   assert.equal(scoreOf(scored.state), 10);
+});
+
+test('one reroll replaces only the active prompt, preserves the timer, and cannot be reused', () => {
+  const start = 1_800_000_000_000;
+  let game = createGame({ mode:'daily', date:'2026-10-17', now:start, seed:'audit' });
+  const originalIds = game.prompts.map(prompt => prompt.id);
+  const deadline = game.roundStart;
+  game = rerollQuestion(game, { replacementId:'p8', now:start + 4000 });
+  assert.equal(game.prompts[0].id, 'p8');
+  assert.equal(game.round, 0);
+  assert.equal(game.roundStart, deadline);
+  assert.equal(game.rerollsUsed, true);
+  assert.equal(new Set(game.prompts.map(prompt => prompt.id)).size, 7);
+  assert.throws(() => rerollQuestion(game, { replacementId:'p9', now:start + 5000 }), /already been used/);
+  assert.throws(() => rerollQuestion(createGame({ mode:'practice', date:'2026-10-17', now:start, seed:'audit' }), { now:start + 29_000 }), /window has closed/);
+  assert.ok(!originalIds.includes('p8'));
+});
+
+test('plunge camera starts exactly where the scene was and tracks smoothly to the score depth', () => {
+  const ocean = Object.create(Ocean.prototype);
+  ocean.cameraDepth = 245;
+  ocean.cameraTarget = 245;
+  ocean.roundIndex = 2;
+  ocean.fx = null;
+  const result = { tier:'rare', score:60 };
+  ocean.drop(100, result, 0);
+  assert.equal(ocean.cameraDepth, 245, 'no visual jump at plunge start');
+  ocean.drop(100, result, .5);
+  assert.ok(ocean.cameraDepth > 245 && ocean.cameraDepth < 730);
+  ocean.drop(100, result, 1);
+  assert.equal(ocean.cameraDepth, 730);
 });
 
 test('daily and practice games retain their selected questions through all seven answers and review', () => {

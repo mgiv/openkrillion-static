@@ -110,6 +110,9 @@ test('deepened and new prompts accept the answers players actually type', () => 
     ['p56', 'orion', 'Orion'], ['p57', 'sirius', 'Sirius'], ['p58', 'granite', 'Granite'],
     ['p59', 'physics', 'Physics'], ['p60', 'civil engineering', 'Civil engineering'], ['p61', 'femur', 'Femur'],
     ['p62', 'diesel engine', 'Diesel engine'], ['p63', 'oxygen', 'Oxygen'],
+    ['p62', 'diesel', 'Diesel engine'], ['p62', 'steam', 'Steam engine'], ['p62', 'v8', 'V8 engine'],
+    ['p48', 'hdd', 'Hard drive'], ['p56', 'big dipper', 'Ursa Major'], ['p56', 'southern cross', 'Crux'],
+    ['p57', 'north star', 'Polaris'], ['p57', 'dog star', 'Sirius'], ['p57', 'the sun', 'Sun'],
   ];
   for (const [id, input, expected] of spots) {
     const result = matchAnswer(input, questionById(id).answers);

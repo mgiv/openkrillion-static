@@ -960,7 +960,7 @@ export const BANK = [
   }),
   q('p48', 'Name a computer part or peripheral', {
     plankton: [
-      'CPU', 'GPU', 'RAM', 'Motherboard', 'Hard drive', 'SSD', 'Monitor', 'Keyboard', 'Mouse', 'Power supply', 'Webcam', 'Printer', 'Headphones', 'Microphone', 'USB cable',
+      'CPU', 'GPU', 'RAM', 'Motherboard', ['Hard drive', ['HDD', 'hard disk', 'hard disk drive']], 'SSD', 'Monitor', 'Keyboard', 'Mouse', 'Power supply', 'Webcam', 'Printer', 'Headphones', 'Microphone', 'USB cable',
     ],
     schooler: [
       'NVMe drive', 'Optical drive', 'DVD drive', 'CD drive', 'Blu-ray drive', 'Floppy drive', 'Scanner', 'Speakers', 'Headset', 'Trackpad', 'Touchpad',
@@ -1113,9 +1113,9 @@ export const BANK = [
   }),
   q('p56', 'Name a constellation', {
     plankton: [
-      'Orion', 'Ursa Major', 'Ursa Minor', 'Cassiopeia', 'Leo', 'Scorpius', 'Taurus', 'Gemini', 'Cancer', 'Virgo', 'Libra', 'Sagittarius',
+      'Orion', ['Ursa Major', ['Big Dipper']], ['Ursa Minor', ['Little Dipper']], 'Cassiopeia', 'Leo', 'Scorpius', 'Taurus', 'Gemini', 'Cancer', 'Virgo', 'Libra', 'Sagittarius',
       'Capricorn', 'Pisces', 'Aquarius', 'Aries', 'Draco', 'Cygnus', 'Pegasus', 'Andromeda', 'Perseus', 'Canis Major', 'Canis Minor', 'Aquila', 'Lyra',
-      'Centaurus', 'Crux', 'Phoenix', 'Hydra', 'Corvus',
+      'Centaurus', ['Crux', ['Southern Cross']], 'Phoenix', 'Hydra', 'Corvus',
     ],
     schooler: [
       'Antlia', 'Apus', 'Ara', 'Auriga', 'Boötes', 'Caelum', 'Camelopardalis', 'Canes Venatici', 'Carina', 'Cepheus', 'Cetus', 'Chamaeleon',
@@ -1130,7 +1130,7 @@ export const BANK = [
   }),
   q('p57', 'Name a star', {
     plankton: [
-      'Sun', 'Sirius', 'Polaris', 'Betelgeuse', 'Rigel', 'Vega', 'Proxima Centauri', 'Alpha Centauri', 'Arcturus', 'Aldebaran', 'Antares', 'Capella',
+      'Sun', ['Sirius', ['Dog Star']], ['Polaris', ['North Star']], 'Betelgeuse', 'Rigel', 'Vega', 'Proxima Centauri', 'Alpha Centauri', 'Arcturus', 'Aldebaran', 'Antares', 'Capella',
       'Altair', 'Deneb', 'Spica', 'Procyon', 'Canopus', 'Fomalhaut', 'Regulus',
     ],
     schooler: [
@@ -1236,8 +1236,8 @@ export const BANK = [
   }),
   q('p62', 'Name a type of engine', {
     plankton: [
-      'Petrol engine', 'Diesel engine', 'Steam engine', 'Electric motor', 'Jet engine', 'Rocket engine', 'V8 engine', 'Hybrid engine',
-      'Steam turbine', 'Gas turbine', 'Two-stroke engine', 'Four-stroke engine',
+      ['Petrol engine', ['petrol']], ['Diesel engine', ['diesel']], ['Steam engine', ['steam']], ['Electric motor', ['electric']], 'Jet engine', 'Rocket engine', ['V8 engine', ['V8']], 'Hybrid engine',
+      ['Steam turbine', ['turbine']], 'Gas turbine', 'Two-stroke engine', 'Four-stroke engine',
     ],
     schooler: [
       'Internal combustion engine', 'External combustion engine', 'Turbofan', 'Turbojet', 'Turboprop', 'Turboshaft', 'Ramjet', 'Scramjet',

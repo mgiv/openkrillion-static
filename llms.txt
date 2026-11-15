@@ -23,6 +23,6 @@ Daily resets at midnight America/New_York. Practice is separate. Settings, in-pr
 - [Report a problem](https://github.com/mgiv/openkrillion-static/issues)
 
 ## Limits
-No generative model, credits, payment flow, themed packs, user login or official affiliation. The public source ships an independently assembled rotating bank of 42 categories and more than 1,400 accepted answers. The entire game runs client-side from static files; no Worker, API or database is required.
+No generative model, credits, payment flow, themed packs, user login or official affiliation. The public source ships an independently assembled rotating bank of 63 categories and more than 6,300 accepted answers. The entire game runs client-side from static files; no Worker, API or database is required.
 
 These documents are rendered from the same public product configuration used by the website. Changes take effect on deployment. External AI links only prefill a public question and may require a provider account; answers and indexing are not guaranteed.

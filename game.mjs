@@ -38,7 +38,7 @@ export function puzzleForDate(date, seed = 'daily') {
     // and the same canonical seven categories on every test run.
     prompts = DEMO.prompts;
   } else if (seed === 'daily') {
-    // Visit every question over a six-day cycle without repeating prompts
+    // Visit every question over a nine-day cycle without repeating prompts
     // inside the cycle. Each cycle gets a different deterministic order.
     const cycle = Math.floor((dayNumber - 1) / DAYS_PER_CYCLE);
     const slot = ((dayNumber - 1) % DAYS_PER_CYCLE + DAYS_PER_CYCLE) % DAYS_PER_CYCLE;

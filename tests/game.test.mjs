@@ -11,6 +11,10 @@ const addDays = (date, days) => {
   return value.toISOString().slice(0, 10);
 };
 
+// Eight prompts name a closed set: the answer space is every member of a fixed
+// list, so seventy fair answers do not exist. Everything else must reach seventy.
+const CLOSED_SET = { p3:37, p4:14, p6:23, p18:32, p21:49, p22:50, p38:40, p40:17 };
+
 test('New York daily date and reset handle both daylight-saving transitions', () => {
   assert.equal(etDate(Date.parse('2026-10-17T03:59:59Z')), '2026-10-16');
   assert.equal(etDate(Date.parse('2026-10-17T04:00:00Z')), '2026-10-17');
@@ -18,12 +22,14 @@ test('New York daily date and reset handle both daylight-saving transitions', ()
   assert.equal(new Date(resetAt('2026-12-17')).toISOString(), '2026-12-18T05:00:00.000Z');
 });
 
-test('the question bank has 42 categories, broad answer coverage, and no duplicate answers within a prompt', () => {
-  assert.equal(BANK.length, 42);
+test('the question bank has 63 categories, broad answer coverage, and no duplicate answers within a prompt', () => {
+  assert.equal(BANK.length, 63);
   assert.equal(DEMO.prompts.length, 7);
-  assert.ok(BANK.reduce((sum, prompt) => sum + prompt.answers.length, 0) > 650);
+  assert.ok(BANK.reduce((sum, prompt) => sum + prompt.answers.length, 0) > 4_000);
+  assert.deepEqual(BANK.filter(prompt => prompt.answers.length < 70).map(prompt => prompt.id), Object.keys(CLOSED_SET));
   for (const prompt of BANK) {
-    assert.ok(prompt.answers.length >= 10, `${prompt.id} should have at least ten accepted answers`);
+    const floor = CLOSED_SET[prompt.id] ?? 70;
+    assert.ok(prompt.answers.length >= floor, `${prompt.id} should have at least ${floor} accepted answers`);
     const keys = new Set();
     for (const answer of prompt.answers) {
       const canonical = normalize(answer.answer);
@@ -38,12 +44,20 @@ test('the question bank has 42 categories, broad answer coverage, and no duplica
   }
 });
 
-test('daily questions rotate through the whole bank without repeats in a six-day cycle', () => {
-  const puzzles = Array.from({ length:6 }, (_, i) => puzzleForDate(addDays('2026-07-16', i)));
+test('prompt ids stay sequential and the bank holds a whole number of dives', () => {
+  assert.deepEqual(BANK.map(prompt => prompt.id), Array.from({ length:63 }, (_, index) => `p${index + 1}`));
+  assert.equal(BANK.length % 7, 0);
+  assert.deepEqual(BANK.slice(0, 7).map(prompt => prompt.id), ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']);
+  assert.equal(DEMO.prompts[0].text, 'Name a way to prepare potatoes');
+  assert.equal(DEMO.prompts[0].answers.length, BANK[0].answers.length);
+});
+
+test('daily questions rotate through the whole bank without repeats in a nine-day cycle', () => {
+  const puzzles = Array.from({ length:9 }, (_, i) => puzzleForDate(addDays('2026-07-16', i)));
   const ids = puzzles.flatMap(puzzle => puzzle.prompts.map(prompt => prompt.id));
-  assert.equal(ids.length, 42);
-  assert.equal(new Set(ids).size, 42);
-  assert.notDeepEqual(puzzleForDate('2026-07-16').prompts.map(p => p.id), puzzleForDate('2026-07-22').prompts.map(p => p.id));
+  assert.equal(ids.length, 63);
+  assert.equal(new Set(ids).size, 63);
+  assert.notDeepEqual(puzzleForDate('2026-07-16').prompts.map(p => p.id), puzzleForDate('2026-07-25').prompts.map(p => p.id));
 });
 
 test('answer matching accepts expanded preparation methods and preserves correction behavior', () => {
@@ -72,6 +86,41 @@ test('answer matching accepts expanded preparation methods and preserves correct
   assert.equal(typo.correction, true);
   assert.equal(matchAnswer('Yttrum', questionById('p4').answers).correction, true);
   assert.equal(matchAnswer('zzzzzzzzzz', potatoes), null);
+});
+
+test('deepened and new prompts accept the answers players actually type', () => {
+  const birds = questionById('p10').answers;
+  for (const input of ['blue tit', 'Blue Tit', 'blue-tit']) assert.equal(matchAnswer(input, birds).answer, 'Blue tit');
+  assert.equal(matchAnswer('great tit', birds).answer, 'Great tit');
+  assert.equal(matchAnswer('goldfinch', birds).answer, 'Goldfinch');
+  const plant = questionById('p9').answers;
+  assert.equal(matchAnswer('eggplant', plant).answer, 'Aubergine');
+  assert.equal(matchAnswer('courgette', plant).answer, 'Zucchini');
+  assert.equal(matchAnswer('beet', plant).answer, 'Beetroot');
+  assert.equal(matchAnswer('peppers', plant).answer, 'Pepper');
+  const spots = [
+    ['p2', 'lion', 'Lion'], ['p3', 'jokic', 'Nikola Jokić'], ['p5', 'weather station', 'Weather station'],
+    ['p12', 'mussel', 'Mussel'], ['p14', 'harpsichord', 'Harpsichord'], ['p20', 'osmium', 'Osmium'],
+    ['p22', 'rhode island', 'Rhode Island'], ['p23', 'gitega', 'Gitega'], ['p33', 'clavicle', 'Collarbone'],
+    ['p35', 'air fryer', 'Air fryer'], ['p38', 'henry v', 'Henry V'], ['p41', 'paccheri', 'Paccheri'],
+    ['p43', 'samsung', 'Samsung'], ['p44', 'nvidia', 'Nvidia'], ['p45', 'python', 'Python'],
+    ['p46', 'firefox', 'Firefox'], ['p47', 'linux', 'Linux'], ['p48', 'gpu', 'GPU'], ['p49', 'pdf', 'PDF'],
+    ['p50', 'https', 'HTTPS'], ['p51', 'kilogram', 'Kilogram'], ['p52', 'water', 'Water'],
+    ['p53', 'steel', 'Steel'], ['p54', 'triangle', 'Triangle'], ['p55', 'thermometer', 'Thermometer'],
+    ['p56', 'orion', 'Orion'], ['p57', 'sirius', 'Sirius'], ['p58', 'granite', 'Granite'],
+    ['p59', 'physics', 'Physics'], ['p60', 'civil engineering', 'Civil engineering'], ['p61', 'femur', 'Femur'],
+    ['p62', 'diesel engine', 'Diesel engine'], ['p63', 'oxygen', 'Oxygen'],
+  ];
+  for (const [id, input, expected] of spots) {
+    const result = matchAnswer(input, questionById(id).answers);
+    assert.ok(result, `${id} should accept ${input}`);
+    assert.equal(result.answer, expected, `${id} should map ${input} to ${expected}`);
+  }
+  const tiers = {};
+  for (const prompt of BANK) for (const answer of prompt.answers) tiers[answer.tier] = (tiers[answer.tier] || 0) + 1;
+  assert.equal(Object.keys(tiers).length, 5, 'no answer may use an unknown tier');
+  assert.equal(tiers.krillion, BANK.length, 'every prompt keeps exactly one krillion answer');
+  assert.ok(tiers.plankton > tiers.deepcut && tiers.deepcut > 0);
 });
 
 test('client game maintains preview, corrections, scoring, pause and resumable state', () => {
